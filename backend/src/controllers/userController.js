@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const { createUser} = require('../services/userService')
+const { createUser, existingUser} = require('../services/userService')
 
 
 
@@ -13,7 +13,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //pass the input to the service for logic implementation
     const newUser = await createUser( username, email, password);
 
-    //returns json to user
+    //returns json response to user
     res.status(201).json({
         success: true,
         user: newUser
@@ -21,14 +21,22 @@ const registerUser = asyncHandler(async (req, res) => {
 });
 
 
+
 //login a user
 //@route POST /api/user/signin
 //@access public
 const loginUser = asyncHandler(async (req,res) => {
-    res.json({
-        message: 'user signed in',
-        statuscode: 200
-    })
-})
+    //get the user input
+    const { username, password } = req.body;
+
+    //pass the data to the service for logic implemenation
+    const currentUser = await existingUser( username, password );
+
+    //return json response to user
+    res.status(201).json({
+        success: true,
+        user: currentUser
+    });
+});
 
 module.exports = { registerUser, loginUser }

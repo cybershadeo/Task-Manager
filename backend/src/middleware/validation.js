@@ -1,5 +1,6 @@
-const { registerUser} = require('../controllers/userController');
+const { ValidationError } = require("../utils/customErrors");
 
+// validating the user input for signing up
 const validateCreateUser = ( req, res, next) => {
     const { username, email, password} = req.body;
 
@@ -9,7 +10,15 @@ const validateCreateUser = ( req, res, next) => {
             message: 'All fields are required'
         });
     }
-
+    
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    if (!emailRegex.test(email)) {
+        return res.status(400).json({
+            success: false,
+            message: 'Wrong email format'
+        })
+    }
+    
     if (password.length < 8) {
         return res.status(400).json({
             success: false,
@@ -21,5 +30,20 @@ const validateCreateUser = ( req, res, next) => {
 };
 
 
+//validating the user input for signing in
+const validateExistingUser = ( req, res , next ) => {
+    const { username, password } = req.body;
 
-module.exports = { validateCreateUser};
+    if(!username || !password) {
+        return res.status(400).json({
+            success: false,
+            message: 'All fields are required'
+        });
+    }
+
+    next();
+} 
+
+
+
+module.exports = { validateCreateUser, validateExistingUser };
