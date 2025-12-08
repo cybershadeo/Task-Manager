@@ -5,7 +5,7 @@ require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 
 
 const bcrypt = require('bcrypt');
-const jwt = require('jsonwebtoken')
+const jwt = require('jsonwebtoken');
 const { findUserByUsername, storeCreatedUser } = require('../repositories/userRepository');
 const { isEmailValid } = require('../utils/externalApis')
 const { ValidationError, ExternalServiceError, ConflictError } = require('../utils/customErrors')
@@ -72,23 +72,13 @@ async function existingUser( username, password) {
                 },
             },
             process.env.ACCESS_TOKEN_SECRET,
-            {expiresIn: '5m'}
+            {expiresIn: '10m'}
         );
         return accessToken;
     } else {
         throw new ValidationError('Username or password is invalid');
     }
 }
-
-
-
-
-
-
-
-
-
-
 
 
 module.exports = { createUser, existingUser };

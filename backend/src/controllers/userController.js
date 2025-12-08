@@ -16,6 +16,7 @@ const registerUser = asyncHandler(async (req, res) => {
     //returns json response to user
     res.status(201).json({
         success: true,
+        message: 'User created successfully',
         user: newUser
     });
 });

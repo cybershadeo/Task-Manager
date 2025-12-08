@@ -1,4 +1,4 @@
-const prisma = require('../config/prisma')
+const prisma = require('../config/prisma');
 
 //checking in my DB if the user exist
 const findUserByUsername = async ( username ) => {

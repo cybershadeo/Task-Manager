@@ -1,13 +1,22 @@
-class ValidationError extends Error {
+class AppError extends Error {
+    constructor( message, statusCode ) {
+        super(message);
+        this.statusCode = statusCode;
+        Error.captureStackTrace(this, this.constructor);
+    }
+}
+
+
+class ValidationError extends AppError {
     constructor( message ) {
         super(message);
-        this.name = 'ValidationError';
+        this.name = 'ValidationAppError';
         this.statusCode = 400;
     }
 }
 
 
-class ConflictError extends Error {
+class ConflictError extends AppError {
     constructor( message ) {
         super( message );
         this.name = 'ConflictError';
@@ -16,7 +25,7 @@ class ConflictError extends Error {
 }
 
 
-class NotFoundError extends Error {
+class NotFoundError extends AppError {
     constructor( message ) {
         super( message );
         this.name = 'NotFoundError';
@@ -24,7 +33,7 @@ class NotFoundError extends Error {
     }
 }
 
-class UnauthorizedError extends Error { 
+class UnauthorizedError extends AppError { 
     constructor( message ) {
         super( message );
         this.name = 'UnauthorizedError';
@@ -32,7 +41,7 @@ class UnauthorizedError extends Error {
     }
 }
 
-class ExternalServiceError extends Error {
+class ExternalServiceError extends AppError {
     constructor ( message ) {
         super( message );
         this.name = 'ExternalServiceError';
@@ -40,7 +49,7 @@ class ExternalServiceError extends Error {
     }
 }
 
-class InternalError extends Error {
+class InternalError extends AppError {
     constructor( message ) {
         super( message );
         this.name = 'InternalError';
@@ -49,6 +58,7 @@ class InternalError extends Error {
 }
 
 module.exports = { 
+    AppError,
     ValidationError, 
     ConflictError, 
     NotFoundError, 
