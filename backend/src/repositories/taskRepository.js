@@ -1,6 +1,6 @@
 const prisma = require('../config/prisma');
 
-class TaskRepository{
+class TaskRepository {
 
     async storeTask ( taskData ) {
         return  prisma.task.create({ 

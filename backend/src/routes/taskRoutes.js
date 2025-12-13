@@ -1,5 +1,5 @@
 const express = require('express');
-const { authUser } = require('../middleware/authentication')
+const { authUser } = require('../middleware/authentication');
 const { createTask, updateUserTask, getUserTask, getUserTasks, deleteUserTask } = require('../controllers/taskController');
 const { route } = require('./userRoutes');
 
@@ -11,5 +11,7 @@ router.put('/:taskId', authUser, updateUserTask);
 router.get('/', authUser, getUserTasks)
 router.get('/:taskId', authUser, getUserTask);
 router.delete('/:taskId', authUser, deleteUserTask);
+
+router.use('/:taskId/subtasks', require('./subtaskRoutes'));
 
 module.exports = router;

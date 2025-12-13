@@ -72,7 +72,7 @@ async function existingUser( username, password) {
                 },
             },
             process.env.ACCESS_TOKEN_SECRET,
-            {expiresIn: '10m'}
+            {expiresIn: '20m'}
         );
         return accessToken;
     } else {

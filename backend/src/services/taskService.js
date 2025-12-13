@@ -1,5 +1,5 @@
-const { TaskRepository } = require('../repositories/taskRepository')
-const { ValidationError, UnauthorizedError, NotFoundError } = require('../utils/customErrors')
+const { TaskRepository } = require('../repositories/taskRepository');
+const { ValidationError, UnauthorizedError, NotFoundError } = require('../utils/customErrors');
 
 
 class TaskService {
@@ -8,7 +8,7 @@ class TaskService {
     }
 
     //@create task
-    //
+    //@
     async createTasks( title, description, priority, dueDate, status, userId ) {
         if(!title) {
             throw new ValidationError('Title is required');
@@ -23,7 +23,7 @@ class TaskService {
             title: title,
             description: description,
             priority: priority,
-            dueDate: dueDate,
+            dueDate: new Date (dueDate),
             status: status
         });
 
@@ -37,7 +37,7 @@ class TaskService {
             status: task.status
         };
     }
-
+    
     async updateTask( taskId, userId, updates ) {
 
         const existingTask = await this.taskRepository.findTaskById(taskId);
@@ -49,10 +49,6 @@ class TaskService {
             throw new UnauthorizedError('Unauthorized');
         }
 
-        /*
-        if(existingTask.status === completed && )
-
-        */
 
         return  await this.taskRepository.updateUserTask( taskId, updates);
     }
@@ -66,7 +62,9 @@ class TaskService {
     }
 
     async deleteTasks( userId, taskId) {
+        
         const existingTask = await this.taskRepository.findTaskById(taskId);
+
         if(!existingTask) {
             throw new NotFoundError('Task not found');
         }
