@@ -38,6 +38,22 @@ class TaskRepository {
             where: {id: taskId}
         });
     }
+
+
+    //used to query all task that belong to a specific category
+    async getAllTasksByCategoryId(categoryId) {
+        return prisma.task.findMany({
+            where: {categoryId: categoryId},
+            include: {
+                _count:{
+                    select: {subtasks: true}
+                }
+            },
+            orderBy: { name: 'asc' }
+        });
+    }
+
+    
 }
 
 

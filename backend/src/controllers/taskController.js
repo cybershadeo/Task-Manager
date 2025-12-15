@@ -1,6 +1,5 @@
 const asyncHandler = require('express-async-handler');
 const { TaskService } = require('../services/taskService');
-const { user } = require('../config/prisma');
 
 const taskService = new TaskService();
 

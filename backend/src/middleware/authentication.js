@@ -38,6 +38,7 @@ const authUser = (req, res, next) => {
       });
     }
 
+  
     //now we verify the token value using jwt.verify
     //check if token was signed with our secret
     //check if token hasn't expired
