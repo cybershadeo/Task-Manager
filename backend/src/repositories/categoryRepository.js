@@ -84,10 +84,4 @@ class CategoryRepository {
 
 module.exports = { CategoryRepository }
 
-/*
-   Optimization to my quries
-   1: quering completed and pending tasks
-   2: Add a parameter whereby if true include the full object else just the count(mostly when quring one category)
-   3: Prevent duplication()
-   4: Before deleting give the impact of deletion
-*/
+

@@ -52,8 +52,3 @@ class SubtaskRepository {
 
 
 module.exports = { SubtaskRepository }
-/* Optimization
-   1: verify task ownership ,include progeress , ordering aslo include parent task info in response
-   2:verify task existance and ownership
-   3: create a reusable ownership verification function
-*/   

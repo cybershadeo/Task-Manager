@@ -76,16 +76,3 @@ class TaskRepository {
 
 
 module.exports = { TaskRepository }
-/*
-  Optimization
-  1: The get query should include the category info,subtask count 
-  2: Also include the subtask count
-  3: Filtering by 1: category if present
-                  2: uncategorized 
-                  3: completed and so on
-                  4: combine filters
-  4:Add pagination in get request/add subtask progress  
-  5:During creation if categoryid is provided ownership should be verified
-  6:When updating task should able to update the categoryId
-  7:During single task quering should have a prameter that either displays the subtask object or count             
- */                 
