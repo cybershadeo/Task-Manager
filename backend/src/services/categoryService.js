@@ -17,6 +17,7 @@ class CategoryService {
         return {
             categoryId: category.id,
             category: category.name,
+            createdAt: category.createdAt
         };
     }
 
@@ -36,7 +37,12 @@ class CategoryService {
             throw new UnauthorizedError('Access denied');
         }
         
-        return category;
+        return {
+            name: category.name,
+            userId: category.userId,
+            createdAt: category.createdAt,
+            tasks: category.tasks
+        };
     }
 
     async updateCateogry(userId, categoryId, updates) {

@@ -1,3 +1,4 @@
+const { category, subtask } = require('../config/prisma');
 const { TaskRepository } = require('../repositories/taskRepository');
 const { ValidationError, UnauthorizedError, NotFoundError } = require('../utils/customErrors');
 
@@ -9,7 +10,7 @@ class TaskService {
 
     //@create task
     //@
-    async createTasks( title, description, priority, dueDate, status, userId ) {
+    async createTasks( title, description, priority, dueDate, status, userId, categoryId ) {
         if(!title) {
             throw new ValidationError('Title is required');
         }
@@ -24,7 +25,8 @@ class TaskService {
             description: description,
             priority: priority,
             dueDate: new Date (dueDate),
-            status: status
+            status: status,
+            categoryId: categoryId
         });
 
 
@@ -40,12 +42,12 @@ class TaskService {
     
     async updateTask( taskId, userId, updates ) {
 
-        const existingTask = await this.taskRepository.findTaskById(taskId);
-        if(!existingTask) {
+        const verify = await this.taskRepository.findTaskById(taskId);
+        if(!verify) {
             throw new NotFoundError('Task not found');
         }
 
-        if(existingTask.userId !== userId ) {
+        if(verify.userId !== userId ) {
             throw new UnauthorizedError('Unauthorized');
         }
 
@@ -54,7 +56,25 @@ class TaskService {
     }
 
     async getTaskById( taskId, userId) {
-        return await this.taskRepository.getTaskById(taskId);
+        const task = await this.taskRepository.getTaskById(taskId);
+        if(!task) {
+            throw new NotFoundError('task not found');
+        }
+
+        if(task.userId !== userId) {
+            throw new UnauthorizedError('Access denied');
+        }
+        return {
+            title: task.title,
+            description: task.description,
+            status: task.status,
+            priority: task.priority,
+            dueDate: task.dueDate,
+            categoryId: task.categoryId,
+            createdAt: task.createdAt,
+            subtasks: task.subtasks
+
+        }
     }
 
     async getAllTask( userId ) {

@@ -1,7 +1,7 @@
 const asyncHandler = require('express-async-handler');
-const { createUser, existingUser} = require('../services/userService')
+const { createUser, existingUser, getUserData, DashboardService} = require('../services/userService')
 
-
+const dashboardService = new DashboardService();
 
 //register a user
 //@route POST /api/user/signup
@@ -40,4 +40,30 @@ const loginUser = asyncHandler(async (req,res) => {
     });
 });
 
-module.exports = { registerUser, loginUser }
+
+const getUserProfile = asyncHandler ( async (req,res) => {
+
+    const userId = req.user && req.user.id;
+
+    const currentUser = await getUserData(userId);
+
+    res.status(200).json({
+        success: true,
+        user: currentUser
+    });
+});
+
+
+const getUserMetrics = asyncHandler (async (req, res) => {
+
+    const userId = req.user && req.user.id;
+
+    const userMetrics = await dashboardService.getDashboardStats(userId);
+
+    res.status(200).json({
+        success: true,
+        data: userMetrics
+    });
+});
+
+module.exports = { registerUser, loginUser, getUserProfile, getUserMetrics }

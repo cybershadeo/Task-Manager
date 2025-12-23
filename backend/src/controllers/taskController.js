@@ -6,9 +6,9 @@ const taskService = new TaskService();
 const createTask = asyncHandler (async ( req, res) => {
 
   const userId = req.user && req.user.id;
-  const  { title, description, priority, dueDate, status } = req.body;
+  const  { title, description, priority, dueDate, status, categoryId } = req.body;
 
-  const newTask = await taskService.createTasks( title, description, priority, dueDate, status, userId);
+  const newTask = await taskService.createTasks( title, description, priority, dueDate, status, userId, categoryId);
 
   //return the json response
   res.status(201).json({

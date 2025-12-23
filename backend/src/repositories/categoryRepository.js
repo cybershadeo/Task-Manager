@@ -24,13 +24,18 @@ class CategoryRepository {
         return prisma.category.findUnique({
             where: { id: categoryId },
             include: {
-                _count: {
-                    select: { tasks: true }
+                tasks: {
+                    select: {
+                        id: true,
+                        title: true,
+                        status: true
+                    }
                 }
             }
         });
     }
  
+
 
     //used in service layer to verify ownership before deleting or updating
     async findCategoryById(categoryId) {
@@ -52,12 +57,37 @@ class CategoryRepository {
         });
     }
 
-    async countCategoriesByUserId(userId) {
-        return prisma.category.count({
-            where: { userId: userId }
+
+
+    async userStats(userId) {
+        return prisma.category.findMany({
+            where: { userId: userId },
+            select: {
+                id: true,
+                name: true,
+                _count: {
+                    select: { tasks: true }
+                },
+                tasks: {
+                    select:{
+                        _count:{
+                            select:{ subtasks: true }
+                        }
+                    }
+                }
+            }   
         });
-    }  
+    }
 }
 
 
+
 module.exports = { CategoryRepository }
+
+/*
+   Optimization to my quries
+   1: quering completed and pending tasks
+   2: Add a parameter whereby if true include the full object else just the count(mostly when quring one category)
+   3: Prevent duplication()
+   4: Before deleting give the impact of deletion
+*/

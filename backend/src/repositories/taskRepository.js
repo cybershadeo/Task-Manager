@@ -23,13 +23,27 @@ class TaskRepository {
 
     async getTaskById (taskId) {
         return prisma.task.findUnique({
-            where: {id: taskId}
+            where: {id: taskId},
+            include: {
+                subtasks: {
+                    select: {
+                        id: true,
+                        title: true,
+                        status: true
+                    }
+                }
+            }
         });
     }
 
     async getAllTasks (userId) {
         return prisma.task.findMany({
-            where: { userId }
+            where: { userId },
+            include: {
+                _count: {
+                    select: { subtasks: true }
+                }
+            }
         });
     }
 
@@ -39,22 +53,39 @@ class TaskRepository {
         });
     }
 
-
-    //used to query all task that belong to a specific category
-    async getAllTasksByCategoryId(categoryId) {
-        return prisma.task.findMany({
-            where: {categoryId: categoryId},
-            include: {
-                _count:{
-                    select: {subtasks: true}
-                }
-            },
-            orderBy: { name: 'asc' }
+    async Stats (userId) {
+        return prisma.task.groupBy({
+            by: ['status'],
+            where: { userId: userId },
+            _count: {_all: true}
         });
     }
 
-    
+    async orphanCount (userId) {
+        return prisma.task.count({
+            where: {
+                 userId: userId,
+                 categoryId: null
+            }
+        });
+    }
+
+
 }
+ 
 
 
 module.exports = { TaskRepository }
+/*
+  Optimization
+  1: The get query should include the category info,subtask count 
+  2: Also include the subtask count
+  3: Filtering by 1: category if present
+                  2: uncategorized 
+                  3: completed and so on
+                  4: combine filters
+  4:Add pagination in get request/add subtask progress  
+  5:During creation if categoryid is provided ownership should be verified
+  6:When updating task should able to update the categoryId
+  7:During single task quering should have a prameter that either displays the subtask object or count             
+ */                 

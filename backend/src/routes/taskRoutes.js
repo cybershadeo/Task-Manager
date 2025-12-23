@@ -15,3 +15,7 @@ router.delete('/:taskId', authUser, deleteUserTask);
 router.use('/:taskId/subtasks', require('./subtaskRoutes'));
 
 module.exports = router;
+/*
+  Optimization
+  1: Add filtering in my routes
+*/  

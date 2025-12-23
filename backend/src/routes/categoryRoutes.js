@@ -13,5 +13,10 @@ router.delete('/:categoryId', authUser, deleteCategory);
 
 //router.get();
 
-
+/*
+   Optimization
+   1: Add another Get route where the task are fully rendered
+         Two chocies 1: add a route or 2: nest the logic in one route
+   2:
+*/
 module.exports = router;

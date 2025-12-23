@@ -37,8 +37,23 @@ class SubtaskRepository {
             where: {id: subtaskId }
         });
     }
+
+    async getSubtaskStats(userId) {
+        return prisma.subtask.groupBy({
+            by: ['status'],
+            where: {
+                task: { userId }
+            },
+            _count: { id: true } 
+        });
+    }
 }
 
 
 
 module.exports = { SubtaskRepository }
+/* Optimization
+   1: verify task ownership ,include progeress , ordering aslo include parent task info in response
+   2:verify task existance and ownership
+   3: create a reusable ownership verification function
+*/   
