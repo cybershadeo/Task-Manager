@@ -51,9 +51,25 @@ async function createUser(username, email, password) {
     password: hashedPassword,
   });
 
+  //create JWT access token
+   const accessToken = jwt.sign(
+      {
+        user: {
+          id: user.id,
+          username: user.username,
+        },
+      },
+      process.env.ACCESS_TOKEN_SECRET,
+      { expiresIn: "20m" }
+    );
+  
   return {
-    id: user.id,
-    username: user.username,
+    accessToken,
+    user: {
+      id: user.id,
+      username: user.username,
+      email: user.email
+    }
   };
 }
 
@@ -78,7 +94,14 @@ async function existingUser(username, password) {
       process.env.ACCESS_TOKEN_SECRET,
       { expiresIn: "20m" }
     );
-    return accessToken;
+    return {
+      accessToken,
+      user: {
+        id: user.id,
+        username: user.username,
+        email: user.email
+      }
+    };
   } else {
     throw new ValidationError("Username or password is invalid");
   }

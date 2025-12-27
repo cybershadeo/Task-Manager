@@ -16,8 +16,8 @@ const registerUser = asyncHandler(async (req, res) => {
     //returns json response to user
     res.status(201).json({
         success: true,
-        message: 'User created successfully',
-        user: newUser
+        accessToken: newUser.accessToken,
+        user: newUser.user
     });
 });
 
@@ -36,7 +36,8 @@ const loginUser = asyncHandler(async (req,res) => {
     //return json response to user
     res.status(201).json({
         success: true,
-        user: currentUser
+        accessToken: currentUser.accessToken,
+        user: currentUser.user
     });
 });
 
