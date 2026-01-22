@@ -29,7 +29,7 @@ class TaskRepository {
                     select: {
                         id: true,
                         title: true,
-                        status: true
+                        completed: true
                     }
                 }
             }

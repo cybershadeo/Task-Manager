@@ -12,17 +12,21 @@ app.use(express.urlencoded({ extended: true}));
 
 
 app.use(cors({
-    origin: 'http://localhost:5173'
+    origin: 'nonlarcenous-versie-unflawed.ngrok-free.dev'
 }));
-
+/*
+app.use(cors());
+*/
+app.use(cors({ 
+    origin: 'http://localhost:5173' 
+}));
 
 app.use('/api/user', require('./src/routes/userRoutes'));
 app.use('/api/categories', require('./src/routes/categoryRoutes'));
 app.use('/api/task', require('./src/routes/taskRoutes'));
+app.use('/api/subtask', require('./src/routes/subtaskRoutes'));
 
 
 app.use( errorHandler );
 
-app.listen(port, () => {
-    console.log(`Server running at port ${port}`);
-});
+app.listen(port, '0.0.0.0');

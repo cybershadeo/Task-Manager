@@ -7,15 +7,16 @@ const categoryService = new CategoryService();
 const createCategory = asyncHandler( async (req, res) => {
 
     const userId = req.user && req.user.id;
-    const { name } = req.body;
+    const { name, color } = req.body;
 
-    const createdCategory = await categoryService.createCategory( userId, name);
-    console.log(createdCategory);
+    console.log(name, color);
+
+    const createdCategory = await categoryService.createCategory( userId, name, color);
+    
 
     res.status(201).json({
         success: true,
-        message: 'Category created successfully',
-        category: createdCategory
+        data: createdCategory
     });
 });
 

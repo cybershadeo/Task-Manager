@@ -17,8 +17,16 @@ const storeCreatedUser = async (userData) => {
 const findUserById = async ( userId ) => {
     return await prisma.user.findUnique({
         where: { id: userId}
-    });
+    });    
 }
 
+const updateUser = async (userId, updateData) => {
+    return await prisma.user.update({
+        where: { id: userId },
+        data: updateData
+    });
+}    
 
-module.exports = { findUserByUsername, storeCreatedUser, findUserById }
+
+
+module.exports = { findUserByUsername, storeCreatedUser, findUserById, updateUser }

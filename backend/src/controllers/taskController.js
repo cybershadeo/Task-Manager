@@ -45,7 +45,7 @@ const getUserTask = asyncHandler (async ( req, res) => {
   res.status(200).json({
     success: true,
     message: 'Here is there task',
-    task:currentTask
+    data:currentTask
   });
 });
 
@@ -57,7 +57,7 @@ const getUserTasks = asyncHandler (async ( req, res) => {
 
   res.status(200).json({
     success: true,
-    task: currentTask
+    data: currentTask
   });
 });
 

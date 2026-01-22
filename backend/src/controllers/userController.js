@@ -1,5 +1,5 @@
 const asyncHandler = require('express-async-handler');
-const { createUser, existingUser, getUserData, DashboardService} = require('../services/userService')
+const { createUser, existingUser, getUserData, DashboardService, updateUserProfile} = require('../services/userService')
 
 const dashboardService = new DashboardService();
 
@@ -8,10 +8,10 @@ const dashboardService = new DashboardService();
 //@access public
 const registerUser = asyncHandler(async (req, res) => {
     //gets the user input
-    const { username, email, password} = req.body;
+    const { username, email, password, profilePicture} = req.body;
 
     //pass the input to the service for logic implementation
-    const newUser = await createUser( username, email, password);
+    const newUser = await createUser( username, email, password, profilePicture);
 
     //returns json response to user
     res.status(201).json({
@@ -50,7 +50,7 @@ const getUserProfile = asyncHandler ( async (req,res) => {
 
     res.status(200).json({
         success: true,
-        user: currentUser
+        data: currentUser
     });
 });
 
@@ -67,4 +67,23 @@ const getUserMetrics = asyncHandler (async (req, res) => {
     });
 });
 
-module.exports = { registerUser, loginUser, getUserProfile, getUserMetrics }
+
+const updateProfile = asyncHandler (async (req, res) => {
+
+    const userId = req.user && req.user.id;
+    const file = req.file;
+    const { username, email} = req.body;
+
+    console.log(file);
+    
+    const updatedUser = await updateUserProfile(userId, {file, username, email});
+
+    res.status(200).json({
+        success: true,
+        data: updatedUser
+    });
+});
+
+
+
+module.exports = { registerUser, loginUser, getUserProfile, getUserMetrics, updateProfile }

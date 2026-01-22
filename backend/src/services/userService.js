@@ -3,28 +3,23 @@ const path = require("path");
 //moving 2 dir up to find the .env file
 require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 
-const bcrypt = require("bcrypt");
-const jwt = require("jsonwebtoken");
-const {
-  findUserByUsername,
-  storeCreatedUser,
-  findUserById,
-} = require("../repositories/userRepository");
+const { findUserByUsername, storeCreatedUser, findUserById, updateUser} = require("../repositories/userRepository");
 const { isEmailValid } = require("../utils/externalApis");
-const {
-  ValidationError,
-  ExternalServiceError,
-  ConflictError,
-  NotFoundError,
-} = require("../utils/customErrors");
+const { ValidationError, ExternalServiceError,ConflictError, NotFoundError,} = require("../utils/customErrors");
 const { TaskRepository } = require("../repositories/taskRepository");
 const { CategoryRepository } = require("../repositories/categoryRepository");
 const { SubtaskRepository } = require("../repositories/subtaskRepository");
+const { uploadProfilePicture } = require("../repositories/storageRepository")
+
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+
+
 
 //@Creates users
 //@checks whether the user exists
 //@Hashing the users password
-async function createUser(username, email, password) {
+async function createUser(username, email, password, profilePicture) {
   const emailCheck = await isEmailValid(email);
   if (!emailCheck.valid) {
     if (emailCheck.isServiceError) {
@@ -49,6 +44,7 @@ async function createUser(username, email, password) {
     username,
     email,
     password: hashedPassword,
+    profilePicture
   });
 
   //create JWT access token
@@ -117,6 +113,7 @@ async function getUserData(userId) {
   return {
     username: user.username,
     email: user.email,
+    profilePicture: user.profilePicture
   };
 }
 
@@ -129,10 +126,6 @@ class DashboardService {
   async getDashboardStats(userId) {
     // 1. Task stats by status
     const taskStats = await this.taskRepository.Stats(userId) || [];
-
-    // 2. Subtask stats by status 
-    const subtaskStats =
-      await this.subtaskRepository.getSubtaskStats(userId) || [];
 
     // 3. Uncategorized tasks
     const orphanTasks = await this.taskRepository.orphanCount(userId) || 0;
@@ -156,21 +149,6 @@ class DashboardService {
       if (stat.status === "inProgress") taskBreakdown.inProgress = count;
     }
 
-    // Process subtask breakdown 
-    const subtaskBreakdown = {
-      completed: 0,
-      pending: 0,
-      inProgress: 0,
-    };
-    let totalSubtasks = 0;
-    for (const stat of subtaskStats) {
-      const count = stat._count?.id ?? 0;
-      totalSubtasks += count;
-      if (stat.status === "completed") subtaskBreakdown.completed = count;
-      if (stat.status === "pending") subtaskBreakdown.pending = count;
-      if (stat.status === "inProgress") subtaskBreakdown.inProgress = count;
-    }
-
     // Process categories
     const categories = categoryMeta.map((cat) => {
       const subtaskCount = cat.tasks.reduce(
@@ -190,14 +168,49 @@ class DashboardService {
       overview: {
         totalCategories: categoryMeta.length,
         totalTasks,
-        totalSubtasks, 
         uncategorizedTasks: orphanTasks,
       },
       taskBreakdown,
-      subtaskBreakdown, 
       categories,
     };
   }
 }
 
-module.exports = { createUser, existingUser, getUserData, DashboardService };
+
+async function updateUserProfile(userId, {file, username, email}) {
+
+  const updateData = {}
+  console.log(file);
+  
+  if (file) {
+    const publicUrl = await uploadProfilePicture(userId, file);
+
+    if(!publicUrl) {
+    throw new ExternalServiceError('Failed to fetch url');
+    }
+
+    updateData.profilePicture = publicUrl;
+  } 
+
+  if (username) {
+    updateData.username = username;
+  }
+
+  if (email) {
+    updateData.email = email;
+  }
+ 
+  if (Object.keys(updateData).length === 0) {
+    throw new ValidationError('No update fields provided');
+  }
+
+  await updateUser(userId, updateData);
+
+  return updateData;
+}
+
+
+
+
+module.exports = { createUser, existingUser, getUserData, DashboardService, updateUserProfile };
+ 

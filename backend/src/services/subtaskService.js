@@ -6,28 +6,28 @@ class SubtaskService {
         this.subtaskRepository = new SubtaskRepository();
     }
 
-    async createSubtasks( title, status, priority, userId, taskId ) {
+
+    async createSubtasks( title, completed, taskId ) {
         if(!title) {
             throw new ValidationError('Title is required');
         }
-
+        
         const subtask = await this.subtaskRepository.storeSubtask({
             taskId,
             title: title,
-            status: status,
-            priority: priority
+            completed: completed
         });
 
         return {
             subtaskId: subtask.id,
             title: subtask.title,
-            status: subtask.status,
-            priority: subtask.priority 
+            completed: subtask.completed 
         };
     }
     
-    async getSubtasks( userId, taskId) {
-        return await this.subtaskRepository.getAllSubtasks(taskId);
+    async getSubtasks(userId) {
+        const subtasks = await this.subtaskRepository.getAllSubtasks(userId);
+        return subtasks;
     }
 
     async getSubtaskById(userId, subtaskId) {

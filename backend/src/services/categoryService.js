@@ -9,14 +9,13 @@ class CategoryService {
         this.categoryRepository = new CategoryRepository();
     }
 
-    async createCategory(userId,name) {
+    async createCategory(userId,color,name) {
 
-        const category =  await this.categoryRepository.storeCategory({name,userId});
-
-        console.log(category);
+        const category =  await this.categoryRepository.storeCategory({name,color,userId});
+        
         return {
             categoryId: category.id,
-            category: category.name,
+            name: category.name,
             createdAt: category.createdAt
         };
     }
@@ -39,6 +38,7 @@ class CategoryService {
         
         return {
             name: category.name,
+            color: category.color,
             userId: category.userId,
             createdAt: category.createdAt,
             tasks: category.tasks

@@ -7,13 +7,25 @@ class SubtaskRepository {
         });
     }
  
-    async getAllSubtasks(taskId) {
+    async getAllSubtasks(userId) {
         return prisma.subtask.findMany({
-            where: { taskId } 
+            where: { 
+                task: {
+                    userId: userId
+                }
+            },
+            select: {
+                id:true,
+                title: true,
+                completed: true,
+                taskId: true,
+                createdAt: true,
+                updatedAt: true
+            }
         });
     }
 
-    async getSubtaskById(userId, subtaskId) {
+    async getSubtaskById(subtaskId) {
         return prisma.subtask.findUnique({
             where: { id: subtaskId}
         });
@@ -35,16 +47,6 @@ class SubtaskRepository {
     async deleteSubtask(subtaskId) {
         return prisma.subtask.delete({
             where: {id: subtaskId }
-        });
-    }
-
-    async getSubtaskStats(userId) {
-        return prisma.subtask.groupBy({
-            by: ['status'],
-            where: {
-                task: { userId }
-            },
-            _count: { id: true } 
         });
     }
 }

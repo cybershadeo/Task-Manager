@@ -5,16 +5,14 @@ const { subtask } = require('../config/prisma');
 const subtaskService = new SubtaskService();
 
 const createSubtask = asyncHandler( async ( req, res) => {
-    const userId = req.user && req.user.id;
-    const taskId = req.params.taskId;
-    const { title, status, priority } = req.body;
-
-    const newSubtask = await subtaskService.createSubtasks( title, status, priority, userId, taskId);
+    
+    const { taskId,title, completed } = req.body;
+    
+    const newSubtask = await subtaskService.createSubtasks( title, completed, taskId);
 
     res.status(201).json({
         success: true,
-        message: 'Subtask created successfully',
-        subtask: newSubtask
+        data: newSubtask
     });
 });
 
@@ -26,7 +24,7 @@ const getAllSubtask = asyncHandler( async (req, res) => {
 
     res.status(200).json({
         success: true,
-        subtask: currentSubtask
+        data: currentSubtask
     });
 });
 
@@ -40,7 +38,7 @@ const getUserSubtask = asyncHandler( async (req, res) => {
 
     res.status(200).json({
         success: true,
-        subtask: currentSubtask
+        data: currentSubtask
     });
 });
 
@@ -55,8 +53,7 @@ const updateUserSubtask = asyncHandler( async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: 'Subtask updated successfully',
-        subtask: currentSubtask
+        data: currentSubtask
     });
 });
 
@@ -68,8 +65,7 @@ const deleteUserSubtask = asyncHandler( async (req, res) => {
 
     res.status(200).json({
         success: true,
-        message: 'Subtask deleted successfully',
-        subtask: currentSubtask 
+        data: currentSubtask 
     });
 });
 

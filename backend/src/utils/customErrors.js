@@ -54,8 +54,18 @@ class InternalError extends AppError {
         super( message );
         this.name = 'InternalError';
         this.statusCode = 500;
+    }    
+
+}
+
+class EnvriomentVariableError extends AppError{
+    constructor(message) {
+        super( message ); 
+        this.name = 'EnvriomentVariableError';
+        this.statusCode = 500;
     }
 }
+
 
 module.exports = { 
     AppError,
@@ -64,5 +74,6 @@ module.exports = {
     NotFoundError, 
     UnauthorizedError,
     ExternalServiceError,
-    InternalError
+    InternalError,
+    EnvriomentVariableError
 }
