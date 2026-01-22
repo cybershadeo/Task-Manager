@@ -1,12 +1,12 @@
 import { Link, useNavigate } from 'react-router-dom';
-import {  useState, useContext } from 'react';
-import  AuthContext from '../context/authContext';
-import '../styles/auth.css';
+import {  useState } from 'react';
+import  { useAuth} from '../hooks/AuthUseContext';
+
 
 
 function SigninPage () {
    const navigate = useNavigate();
-   const { login } = useContext(AuthContext)
+   const { login } = useAuth();
 
    const [isLoading, setIsLoading] = useState(false);
    const [error, setError] = useState(null);
@@ -43,37 +43,64 @@ function SigninPage () {
 
 
     return (
-        <div className="auth-page">
-            <form className="auth-card credentials-panel signin" onSubmit={handleSubmit}>
-               <h2 className="slide-element">Login</h2>
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 px-4">
+            <form className="w-full max-w-md bg-white rounded-2xl shadow-xl p-8 border border-gray-100" 
+                  onSubmit={handleSubmit}
+            >
+               <h2 className="text-3xl font-bold text-gray-900 mb-8 text-center tracking-tight">
+                  Login
+               </h2>
 
-               <div className="field-wrapper slide-element">
-                  <label>
+                <div className='mb-5'>
+                   <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
                     Username
-                    <input className="auth-input" type="text" name="username" onChange={handleChange} 
-                     value={formData.username} required />
-                  </label>
-               </div>  
+                    <input className='w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-gray-400' 
+                           type="text" name="username" onChange={handleChange} 
+                           value={formData.username} placeholder='Enter your username'
+                           required 
+                    />
+                   </label> 
+                </div>
 
-               <div className="field-wrapper slide-element">
-                  <label>
+               <div className="mb-6">
+                  <label className="block text-sm font-medium text-gray-700 mb-1.5 ml-1">
                      Password
-                     <input className="auth-input" type="password" name="password" onChange={handleChange} 
-                      value={formData.password} required />
+                     <input className="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all placeholder:text-gray-400" 
+                            type="password" name="password" onChange={handleChange} 
+                            value={formData.password} required 
+                     />
                   </label>
                </div>
-               <div className="slide-element">
-                  {error && <p className="auth-error"> {error} </p>}
+               <div className="min-h-[32px] mb-4">
+                  {error && (
+                     <p className="text-sm font-medium text-red-600 bg-red-50 border border-red-100 px-3 py-2 rounded-lg animate-in fade-in slide-in-from-top-1"> 
+                        {error} 
+                     </p> 
+                  )}
                </div>
 
-               <div className="slide-element">
-                  <button className="auth-button submit-button" type="submit" disabled={isLoading} > {isLoading ? 'Logging in..' : 'Login'} </button>
-               </div>
+               <div>
+                    <button className="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl shadow-md shadow-indigo-200 transition-all active:scale-[0.98] disabled:opacity-70 disabled:cursor-not-allowed" 
+                            type="submit" disabled={isLoading}
+                    > 
+                        {isLoading ? (
+                            <span className="flex items-center justify-center gap-2">
+                                <svg className="animate-spin h-5 w-5 text-white" viewBox="0 0 24 24">
+                                    <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                    <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4z" />
+                                </svg>
+                                Login in...
+                            </span>
+                            ) : 'Login'} 
+                    </button>
+                </div>
 
-               <div className="slide-element">
-                  <p className="auth-footer">
+               <div className="t-8 text-centerm">
+                  <p className="text-gray-600 text-sm">
                      Don't have an account? <br/>
-                     <Link to='/signup'>Sign Up</Link>
+                     <Link to='/signup' className='text-indigo-600 font-semibold hover:text-indigo-500 underline-offset-4 hover:underline'>
+                        Sign Up
+                     </Link>
                   </p>
                </div>
 

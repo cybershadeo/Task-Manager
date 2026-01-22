@@ -1,7 +1,7 @@
 
 import { useState } from 'react';
 import * as authService from '../services/authServices'
-import AuthContext from './authContext';
+import { AuthContext } from './contextCreation';
 
 
 export const AuthProvider = ({ children }) => {
@@ -59,11 +59,9 @@ export const AuthProvider = ({ children }) => {
     };
 
 
-    // Auto-login on app load
-    // No effect needed to synchronously set loading since it's initialized from state.
 
     //what other components can use
-    const value = {
+    const values = {
         user,
         token,
         login: handleLogin,
@@ -72,7 +70,7 @@ export const AuthProvider = ({ children }) => {
     };
 
     return (
-        <AuthContext.Provider value={value}>
+        <AuthContext.Provider value={values}>
             {children}
         </AuthContext.Provider>
     );
