@@ -36,7 +36,13 @@ function CreateTaskButton({ categoryId }) {
 
         try {
             await createTask(dataToSubmit);
-            setFormData('');
+            setFormData({
+                title:'',
+                description:'',
+                status: '',
+                priority: '',
+                dueDate: ''
+            });
             setIsModalOpen(false);
         } catch (err) {
             setError(err?.response?.data?.message || err.message || 'Creation failed')
@@ -92,7 +98,7 @@ function CreateTaskButton({ categoryId }) {
                                 /> 
                                 <input
                                     name='status' value={formData.status} onChange={handleChange}
-                                    placeholder='status' required
+                                    placeholder='status(e.g. pending/inProgress)' required
                                     className='w-full px-3 py-2 border rounded-lg mb-4 focus:ring-2 focus:ring-indigo-500 outline-none'
                                 />      
                                 <input

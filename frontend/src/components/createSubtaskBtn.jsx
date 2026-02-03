@@ -16,7 +16,7 @@ function CreateSubtaskButton({ taskId }) {
         e.preventDefault();
 
         try {
-            await addSubtask( {taskId, title: subtaskTitle, completed: false});
+            await addSubtask({taskId, title: subtaskTitle, completed: false});
             setSubtaskTitle('');
             setIsModalOpen(false);
             

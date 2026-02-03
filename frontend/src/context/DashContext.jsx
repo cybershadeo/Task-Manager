@@ -1,106 +1,95 @@
 import { DashboardContext } from "./contextCreation";
 import * as dashServices from "../services/dashboardServices";
 import * as categoryServices from "../services/categoryService";
-import { useEffect, useState } from "react";
+import { useEffect, useState, useCallback } from "react";
 
 export const DashProvider = ({ children }) => {
-  const [stats, setStats] = useState({ overview: null, categories: [] });
+
+  const [categories, setCategories] = useState([]);
+  const [overview, setOverview] = useState({});
   const [user, setUser] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
 
-  useEffect(() => {
-    const fetchStats = async () => {
-      try {
-        setIsLoading(true);
-        const [statsData, userProile] = await Promise.all([
-          dashServices.getDashboardStats(),
-          dashServices.getUserProfile()
-        ]);
-          
-        setStats(statsData.data)
-        setUser(userProile.data);
-      } catch (error) {
-        console.error("Failed to fetch data:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
 
-    fetchStats();
+  const fetchStats = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [statsData, userProile] = await Promise.all([
+        dashServices.getDashboardStats(),
+        dashServices.getUserProfile()
+      ]);
+          
+      setCategories(statsData.data?.categories);
+      setOverview(statsData.data?.overview);
+      setUser(userProile.data);
+    } catch (error) {
+        console.error("Failed to fetch data:", error);
+    } finally {
+        setIsLoading(false);
+    }
   }, []);
 
-  
-  const { overview, categories, taskBreakdown } = stats;
+
+  useEffect(() => {
+    fetchStats();
+  },[fetchStats]);
+
+ 
   const uncategorizedCount = overview?.uncategorizedTasks ?? 0;
 
-  const handleAddCategory = async (name, color) => {
-    try {
-      const response = await categoryServices.createCategory({ name, color });
-      const addedCategory = response.data;
-      
-      // Update categories in stats
-      setStats((prev) => ({
-        ...prev,
-        categories: [...prev.categories, {
-          categoryId: addedCategory.id,
-          categoryName: addedCategory.name,
-          taskCount: 0,
-          subtaskCount: 0
-        }],
-        overview: {
-          ...prev.overview,
-          totalCategories: (prev.overview?.totalCategories || 0) + 1
-        }
-      }));
-      
-      return addedCategory;
-    } catch (error) {
-      console.error("Failed to create category:", error);
-      throw error;
-    }
+  const AddCategory = async (categoryData) => {
+  
+      const response = await categoryServices.createCategory(categoryData);
+      await fetchStats();
+
+      return response.data;
   };
+
+  const updateCategory = async (categoryId,updateData) => {
+    const response = await categoryServices.updateCategory(categoryId, updateData);
+    await fetchStats();
+
+    return response.data;
+    
+  }
+
+  const deleteCategory = async () => {
+    const categoryId = selectedCategoryId;
+    
+      await categoryServices.deleteCategory(categoryId);
+      
+      setSelectedCategoryId(null);
+      await fetchStats();
+  }
+  
 
   const handleSelectCategory = (categoryId) => {
     setSelectedCategoryId(categoryId);
   };
 
-  // Refresh stats (useful after creating/deleting tasks)
-  const refreshStats = async () => {
-    try {
-      const StatsData = await dashServices.getDashboardStats();
-      setStats(StatsData.data);
-    } catch (error) {
-      console.error("Failed to refresh stats:", error);
-    }
-  };
-
- 
 
   const updateUserProfile = async (userId, updateData) => {
-    console.log(updateData);
-    try {
-      const response = await dashServices.updateUserProfile(userId, updateData);
-      const updatedUser = response?.data;
-      setUser(updatedUser);
-    } catch (error) {
-      console.error('Failed to update userProfile:', error);
-      throw error;
-    }
+    const response = await dashServices.updateUserProfile(userId, updateData);
+    setUser(response.data);
+
+    return response.data;
   }
 
   const values = {
     overview,
-    taskBreakdown,
     categories,
     isLoading,
     uncategorizedCount,
     selectedCategoryId,
     user,
     updateUserProfile,
+    updateCategory,
+    deleteCategory,
     onSelectCategory: handleSelectCategory,
-    createCategory: handleAddCategory,
-    refreshStats,
+    createCategory: AddCategory,
+    refetchDashboard: fetchStats
+  
   };
 
   return (

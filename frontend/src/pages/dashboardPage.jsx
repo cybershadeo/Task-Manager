@@ -20,6 +20,4 @@ function DashboardPage() {
 }
 
 export default DashboardPage;
-<div class="bg-blue-500 p-4 text-sm md:bg-green-500 md:p-8 md:text-base lg:bg-purple-600 lg:p-12">
-  Responsive Content
-</div>
+

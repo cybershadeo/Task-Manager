@@ -64,7 +64,7 @@ function EditProfile({ user, onClose, onSave }) {
     try {
       const formDataToSend = new FormData();
 
-      console.log(formDataToSend)
+      
       if (formData.username !== user.username) {
         formDataToSend.append('username', formData.username);
       }
@@ -77,9 +77,6 @@ function EditProfile({ user, onClose, onSave }) {
         formDataToSend.append('avatar', profileFile);
       }
       
-      for (const [key, value] of formDataToSend.entries()) {
-        console.log(key, value);
-      }
 
       await onSave(formDataToSend);
       

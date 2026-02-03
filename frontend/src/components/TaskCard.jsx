@@ -5,7 +5,6 @@ import {
   MoreHorizontal,
   ChevronDown,
   CheckSquare,
-  Square,
   Plus,
   Trash2,
   Edit,
@@ -93,7 +92,7 @@ function TaskCard({ task }) {
   const rawSuggestion = 
     task.status === 'pending' && totalSubtasks === 1
       ? 'MOVE_TO_IN_PROGRESS'
-      : task.status === 'inProgress' && 
+      : task.status === 'InProgress' && 
           totalSubtasks > 0 && 
           completedSubtasks === totalSubtasks
       ? 'MOVE_TO_COMPLETED'

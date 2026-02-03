@@ -11,10 +11,6 @@ function Profile() {
   };
 
   const handleSave = async (updatedData) => {
-    for (const [key, value] of updatedData.entries()) {
-      console.log(key, value);
-    }
-
     try {
       const savedUser = JSON.parse(localStorage.getItem('user'));
       const userId = savedUser?.id;
@@ -44,6 +40,7 @@ function Profile() {
   };
 
 
+  
   return (
     <>
       <button

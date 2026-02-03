@@ -1,7 +1,10 @@
 import { Layout, Layers } from 'lucide-react';
 import { useDash } from '../hooks/dashUseContext';
+import { useTask } from '../hooks/taskUseContext';
 import CreateCategoryButton from './createCategoryBtn';
 import SettingsSidebar from './settings';
+
+
 
 function SideBar() {
   const { 
@@ -12,8 +15,12 @@ function SideBar() {
     isLoading 
   } = useDash();
 
+  const { tasks } = useTask();
+
+
+
   return (
-    <aside className="hidden md:flex flex-col w-64 h-screen bg-gray-50 border-r border-gray-200 fixed left-0 top-0 overflow-y-auto z-20">
+    <aside className="md:flex flex-col w-64 h-screen bg-gray-50 border-r border-gray-200 fixed left-0 top-0 overflow-y-auto z-20">
       {/* Header */}
       <div className="p-6 flex items-center gap-3">
         <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center shadow-lg shadow-indigo-200">
@@ -71,10 +78,10 @@ function SideBar() {
           ) : categories && categories.length > 0 ? (
             categories.map((category) => (
               <button
-                key={category.categoryId}
-                onClick={() => onSelectCategory(category.categoryId)}
+                key={category?.id}
+                onClick={() => onSelectCategory(category?.id)}
                 className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedCategoryId === category.categoryId
+                  selectedCategoryId === category?.id
                     ? 'bg-white text-indigo-600 shadow-sm border border-gray-100'
                     : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
                 }`}
@@ -82,22 +89,25 @@ function SideBar() {
                 <div className="flex items-center gap-3">
                   <div
                     className="w-2 h-2 rounded-full"
-                    style={{ backgroundColor: category.color || '#6366f1' }}
+                    style={{ backgroundColor: category?.categoryColor || '#6366f1' }}
                     aria-hidden="true"
                   />
-                  <span>{category.categoryName}</span>
+                  <span>{category?.categoryName}</span>
                 </div>
-                {category.taskCount > 0 && (
+                {category?.taskCount > 0 && (
                   <span
                     className={`text-xs px-2 py-0.5 rounded-full ${
-                      selectedCategoryId === category.categoryId
+                      selectedCategoryId === category?.id
                         ? 'bg-indigo-50 text-indigo-600'
                         : 'bg-gray-200 text-gray-600'
                     }`}
                   >
-                    {category.taskCount}
+                    {tasks.filter(
+                      t => t.categoryId === category?.id
+                    ).length}
                   </span>
                 )}
+               
               </button>
             ))
           ) : (
@@ -105,17 +115,22 @@ function SideBar() {
               No categories yet
             </div>
           )}
-
-          <CreateCategoryButton />
+ 
         </nav>
+        <div>
+          <CreateCategoryButton />
+        </div>
+        
       </div>
 
       {/* Footer */}
+      
       <SettingsSidebar />
- 
     </aside>
   );
 }
 
 
 export default SideBar;
+
+

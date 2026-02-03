@@ -1,7 +1,8 @@
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useMemo, useCallback } from 'react';
 import { TaskContext } from './contextCreation';
 import * as taskServices from '../services/taskServices';
 import * as subtaskServices from '../services/subtaskServices';
+import { useDash } from '../hooks/dashUseContext';
 
 
 
@@ -10,14 +11,15 @@ export const TaskProvider = ({ children }) => {
   const [subtasks, setSubtasks] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
 
+  const { refetchDashboard } = useDash();
 
-  // Fetch all tasks and subtasks
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        setIsLoading(true);
-        const [tasksResponse, subtasksResponse] = await Promise.all([
-          taskServices.getAllTasks(),
+
+
+  const fetchData = useCallback(async () => {
+    try {
+      setIsLoading(true);
+      const [tasksResponse, subtasksResponse] = await Promise.all([
+        taskServices.getAllTasks(),
           subtaskServices.getAllSubtasks(),
         ]);
         
@@ -28,117 +30,106 @@ export const TaskProvider = ({ children }) => {
       } finally {
         setIsLoading(false);
       }
-    };
+    }, []);
+
+
+  // Fetch all tasks and subtasks
+  useEffect(() => {
 
     fetchData();
-  }, []);
+  }, [fetchData]);
 
   // Merge tasks with their subtasks
-  const getTasksWithSubtasks = () => {
-
-    
+  const tasksWithSubtasks = useMemo(() => {
     return tasks.map((task) => ({
       ...task,
       subtasks: subtasks.filter((subtask) => subtask.taskId === task.id),
     }));
-  };
+  }, [tasks, subtasks]);
 
+    
+
+  
   // Create a new task
   const createTask = async (taskData) => {
-    try {
       const response = await taskServices.createTask(taskData);
       const newTask = response.task || response.data;
       setTasks((prev) => [...prev, newTask]);
+      await refetchDashboard();
+      await fetchData();
       return newTask;
-    } catch (error) {
-      console.error('Failed to create task:', error);
-      throw error;
-    }
   };
 
   // Update a task
   const updateTask = async (taskId, updates) => {
-    try {
+
       const response = await taskServices.updateTask(taskId, updates);
       const updatedTask = response.task || response.data;
       setTasks((prev) =>
         prev.map((task) => (task.id === taskId ? updatedTask : task))
       );
+      await refetchDashboard();
+      await fetchData();
       return updatedTask;
-    } catch (error) {
-      console.error('Failed to update task:', error);
-      throw error;
-    }
   };
 
   // Delete a task
   const deleteTask = async (taskId) => {
-    try {
       await taskServices.deleteTask(taskId);
       setTasks((prev) => prev.filter((task) => task.id !== taskId));
-      // Also remove all subtasks for this task
+      // remove all subtasks for this task
       setSubtasks((prev) => prev.filter((subtask) => subtask.taskId !== taskId));
-    } catch (error) {
-      console.error('Failed to delete task:', error);
-      throw error;
-    }
+      await refetchDashboard();
+      await fetchData()
   };
 
   // Add subtask
   const addSubtask = async (taskId, subtaskData) => {
-    try {
+    
       const response = await subtaskServices.createSubtasks(taskId, subtaskData);
       const newSubtask = response.subtask || response.data;
       setSubtasks((prev) => [...prev, newSubtask]);
+      await fetchData();
       return newSubtask;
-    } catch (error) {
-      console.error('Failed to add subtask:', error);
-      throw error;
-    }
   };
 
   // Update subtask
   const updateSubtask = async (taskId, subtaskId, updates) => {
-    try {
-      const response = await subtaskServices.updateSubtask(subtaskId, updates);
+    
+      const response = await subtaskServices.updateSubtask(taskId, subtaskId, updates);
       const updatedSubtask = response.subtask || response.data;
       setSubtasks((prev) =>
         prev.map((subtask) =>
           subtask.id === subtaskId ? updatedSubtask : subtask
         )
       );
+      await fetchData();
       return updatedSubtask;
-    } catch (error) {
-      console.error('Failed to update subtask:', error);
-      throw error;
-    }
   };
 
   // Delete subtask
   const deleteSubtask = async (taskId, subtaskId) => {
-    try {
-      await subtaskServices.deleteSubtask(subtaskId);
-      setSubtasks((prev) => prev.filter((subtask) => subtask.id !== subtaskId));
-    } catch (error) {
-      console.error('Failed to delete subtask:', error);
-      throw error;
-    }
+    await subtaskServices.deleteSubtask(taskId, subtaskId);
+    setSubtasks((prev) => prev.filter((subtask) => subtask.id !== subtaskId));
+    await fetchData();
   };
 
   // Toggle subtask completion
   const toggleSubtask = async (taskId, subtaskId, completed) => {
-    try {
-      await subtaskServices.updateToggledSubtask(taskId, subtaskId, { completed });
-    } catch (error) {
-      console.error('Failed to toggle subtask:', error);
-      throw error;
-    }
+    
+    const response = await subtaskServices.updateToggledSubtask(taskId, subtaskId, { completed });
+    const updatedSubtask = response.data;
+    setSubtasks((prev) => 
+      prev.map(s => 
+        s.id === subtaskId ? updatedSubtask : s
+      )
+    );
+    await fetchData();
   };
 
   // Filter tasks by category (synced with DashContext)
   const getFilteredTasks = (selectedCategoryId) => {
-    const tasksWithSubtasks = getTasksWithSubtasks();
-    
+
     // If null, show uncategorized tasks (tasks without categoryId)
     if (selectedCategoryId === null) {
       return tasksWithSubtasks.filter((task) => !task.categoryId);
@@ -148,21 +139,31 @@ export const TaskProvider = ({ children }) => {
     if (!selectedCategoryId) return tasksWithSubtasks;
     
     // Filter by selected category
-    return tasksWithSubtasks.filter((task) => task.categoryId === selectedCategoryId);
+    return tasksWithSubtasks.filter(
+      (task) => task.categoryId === selectedCategoryId
+    );
   };
 
   const values = {
-    tasks: getTasksWithSubtasks(),
+    tasks: tasksWithSubtasks,
     getFilteredTasks, // Export as function
     isLoading,
+
     createTask,
     updateTask,
     deleteTask,
+
     addSubtask,
     updateSubtask,
     deleteSubtask,
     toggleSubtask,
   };
 
-  return <TaskContext.Provider value={values}>{children}</TaskContext.Provider>;
-};
+  return (
+    <TaskContext.Provider value={values}>
+      {children}
+    </TaskContext.Provider>
+  );
+
+}
+

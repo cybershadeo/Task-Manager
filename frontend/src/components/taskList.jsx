@@ -1,20 +1,21 @@
 import { Reorder } from 'framer-motion';
 import  TaskCard  from './TaskCard';
 import CreateTaskButton from './createTaskBtn';
+import CategoryEditMenu from './editCategory';
 import { Plus } from 'lucide-react';
 import { useTask } from '../hooks/taskUseContext';
 import { useDash } from '../hooks/dashUseContext';
 
 export function KanbanBoard() {
   const { getFilteredTasks, isLoading } = useTask();
-  const { selectedCategoryId, categories, overview, taskBreakdown } = useDash();
+  const { selectedCategoryId, categories, overview } = useDash();
 
   // Get filtered tasks based on selected category
   const filteredTasks = getFilteredTasks(selectedCategoryId);
-
+  
   // Group tasks by status
   const pendingTasks = filteredTasks.filter((t) => t.status === 'pending');
-  const inProgressTasks = filteredTasks.filter((t) => t.status === 'inProgress');
+  const inProgressTasks = filteredTasks.filter((t) => t.status === 'InProgress');
   const completedTasks = filteredTasks.filter((t) => t.status === 'completed');
 
   // Handle reordering within a column
@@ -31,7 +32,7 @@ export function KanbanBoard() {
       status: 'pending',
       items: pendingTasks,
       color: 'bg-amber-400',
-      count: taskBreakdown?.pending || 0,
+      count: pendingTasks.length,
       emptyMessage: 'No pending tasks. Create one to get started.'
     },
     {
@@ -40,7 +41,7 @@ export function KanbanBoard() {
       status: 'inProgress',
       items: inProgressTasks,
       color: 'bg-indigo-400',
-      count: taskBreakdown?.inProgress || 0,
+      count: inProgressTasks.length ,
       emptyMessage: 'No tasks in progress yet.'
     },
     {
@@ -49,19 +50,24 @@ export function KanbanBoard() {
       status: 'completed',
       items: completedTasks,
       color: 'bg-emerald-400',
-      count: taskBreakdown?.completed || 0,
+      count: completedTasks.length ,
       emptyMessage: 'No complete tasks'
     },
   ];
 
-  const currentCategoryName = selectedCategoryId
-    ? categories.find((c) => c.categoryId === selectedCategoryId)?.categoryName
+  const currentCategory = selectedCategoryId
+    ? categories.find((category) => category?.id === selectedCategoryId)
+    : null;
+
+  const currentCategoryName = currentCategory 
+    ? currentCategory.categoryName
     : 'Uncategorized Tasks';
 
-  const currentCategoryDesc = selectedCategoryId
-    ? `Manage tasks for ${currentCategoryName}`
+  const currentCategoryDesc = currentCategory
+    ? `Manage tasks for ${currentCategory?.categoryName}`
     : "Tasks that haven't been assigned to a specific category yet.";
 
+  
   return (
     <div className="flex-1 overflow-x-auto overflow-y-hidden h-full">
       {isLoading ? (
@@ -73,11 +79,22 @@ export function KanbanBoard() {
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <div>
-            <h1 className="text-2xl font-bold text-gray-900">
+            <div className='flex gap-10'>
+              <h1 className="text-2xl font-bold text-gray-900">
               {currentCategoryName}
-            </h1>
+              </h1>
+              {selectedCategoryId && (
+                <CategoryEditMenu 
+                  category={currentCategory} 
+                  categoryId={currentCategory?.id} 
+                />
+              )}
+            </div>
+
             <p className="text-sm text-gray-500 mt-1">{currentCategoryDesc}</p>
+            
           </div>
+          
           <div className="flex items-center gap-3">
             {/* Task Summary Stats */}
             <div className="flex items-center gap-4 mr-4 text-sm">
@@ -142,10 +159,7 @@ export function KanbanBoard() {
                   </div>
                 )}
 
-                <button className="w-full py-3 mt-2 flex items-center justify-center gap-2 text-sm text-gray-400 hover:text-gray-600 hover:bg-gray-100/50 rounded-xl border border-dashed border-gray-200 hover:border-gray-300 transition-all">
-                  <Plus className="w-4 h-4" />
-                  Add Task
-                </button>
+
               </div>
             </div>
           ))}

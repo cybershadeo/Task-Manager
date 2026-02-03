@@ -42,7 +42,8 @@ function SubtaskItem({ subtask, taskId, onToggle }) {
   };
 
   const handleSaveSubtask = async (updatedData) => {
-    await updateSubtask(taskId, subtask.id, updatedData);
+    let subtaskId = subtask.id
+    await updateSubtask(taskId, subtaskId, updatedData);
   };
 
   return (
