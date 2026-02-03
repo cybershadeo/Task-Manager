@@ -1,8 +1,4 @@
-const path = require("path");
-
-//moving 2 dir up to find the .env file
-require("dotenv").config({ path: path.join(__dirname, "../../.env") });
-
+require("dotenv").config();
 const { findUserByUsername, storeCreatedUser, findUserById, updateUser} = require("../repositories/userRepository");
 const { isEmailValid } = require("../utils/externalApis");
 const { ValidationError, ExternalServiceError,ConflictError, NotFoundError,} = require("../utils/customErrors");
@@ -157,8 +153,9 @@ class DashboardService {
       );
 
       return {
-        categoryId: cat.id,
+        id: cat.id,
         categoryName: cat.name,
+        categoryColor: cat.color,
         taskCount: cat._count?.tasks ?? 0,
         subtaskCount,
       };
@@ -180,7 +177,7 @@ class DashboardService {
 async function updateUserProfile(userId, {file, username, email}) {
 
   const updateData = {}
-  console.log(file);
+  
   
   if (file) {
     const publicUrl = await uploadProfilePicture(userId, file);
@@ -197,9 +194,9 @@ async function updateUserProfile(userId, {file, username, email}) {
   }
 
   if (email) {
-    updateData.email = email;
+   updateData.email = email;
   }
- 
+
   if (Object.keys(updateData).length === 0) {
     throw new ValidationError('No update fields provided');
   }

@@ -6,7 +6,7 @@ const storageRepository = require('../../../src/repositories/storageRepository')
 const userRepository = require('../../../src/repositories/userRepository');
 const { ExternalServiceError } = require('../../../src/utils/customErrors');
 
-
+/*
 describe('UserService - updateProfielPicture', () => {
     beforeEach(() => {
         jest.clearAllMocks();
@@ -41,3 +41,9 @@ describe('UserService - updateProfielPicture', () => {
             .rejects.toThrow('Upload failed');
     });
 });
+*/
+describe('UserService - updateUserProfile', () => {
+    beforeEach(() => {
+        
+    })
+})

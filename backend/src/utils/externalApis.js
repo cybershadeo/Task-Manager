@@ -1,7 +1,6 @@
-const path = require("path");
+require('dotenv').config();
+const {ExternalServiceError} = require('./customErrors');
 
-//moving 2 dir up to find the .env file
-require("dotenv").config({ path: path.join(__dirname, "../../.env") });
 
 //calls the abstractapi to validate the authenticity of the email
 async function validateEmailWithAbstract(email) {
@@ -13,7 +12,7 @@ async function validateEmailWithAbstract(email) {
 
   //we throw an error if the request is unsuccessful
   if (!response.ok) {
-    throw new Error("Abstract failed to validate email");
+    throw new ExternalServiceError("Abstract failed to validate email");
   }
 
   //convert the response to json

@@ -2,12 +2,14 @@ const prisma = require('../config/prisma');
 
 class CategoryRepository {
 
-    async storeCategory( categoryData) {
+    async storeCategory (categoryData) {
+        console.log(categoryData);
         return prisma.category.create({
-            data: categoryData
+            data:categoryData
         });
     }
 
+    
     async getAllCategories(userId) {
         return prisma.category.findMany({
             where: { userId: userId },
@@ -65,6 +67,7 @@ class CategoryRepository {
             select: {
                 id: true,
                 name: true,
+                color: true,
                 _count: {
                     select: { tasks: true }
                 },

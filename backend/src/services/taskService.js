@@ -41,7 +41,7 @@ class TaskService {
     }
     
     async updateTask( taskId, userId, updates ) {
-
+        
         const verify = await this.taskRepository.findTaskById(taskId);
         if(!verify) {
             throw new NotFoundError('Task not found');
@@ -51,8 +51,10 @@ class TaskService {
             throw new UnauthorizedError('Unauthorized');
         }
 
+        const {title, description, status, priority, dueDate} = updates
+        let data = {title, description, status, priority, dueDate}
 
-        return  await this.taskRepository.updateUserTask( taskId, updates);
+        return  await this.taskRepository.updateUserTask( taskId, data);
     }
 
     async getTaskById( taskId, userId) {

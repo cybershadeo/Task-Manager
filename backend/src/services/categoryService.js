@@ -3,18 +3,22 @@ const { CategoryRepository } = require('../repositories/categoryRepository');
 const { ValidationError, UnauthorizedError, NotFoundError, ConflictError } = require('../utils/customErrors');
 
 
-
 class CategoryService {
     constructor() {
         this.categoryRepository = new CategoryRepository();
     }
 
-    async createCategory(userId,color,name) {
+    async createCategory({userId,name,color}) {
 
-        const category =  await this.categoryRepository.storeCategory({name,color,userId});
+        
+        const category =  await this.categoryRepository.storeCategory({
+            userId,
+            name: name,
+            color: color
+        });
         
         return {
-            categoryId: category.id,
+            id: category.id,
             name: category.name,
             createdAt: category.createdAt
         };
@@ -46,7 +50,6 @@ class CategoryService {
     }
 
     async updateCateogry(userId, categoryId, updates) {
-        console.log(categoryId);
         const verify = await this.categoryRepository.findCategoryById(categoryId);
 
         if(!verify) {

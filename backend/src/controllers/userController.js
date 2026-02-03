@@ -74,7 +74,7 @@ const updateProfile = asyncHandler (async (req, res) => {
     const file = req.file;
     const { username, email} = req.body;
 
-    console.log(file);
+   
     
     const updatedUser = await updateUserProfile(userId, {file, username, email});
 

@@ -11,7 +11,7 @@ const createCategory = asyncHandler( async (req, res) => {
 
     console.log(name, color);
 
-    const createdCategory = await categoryService.createCategory( userId, name, color);
+    const createdCategory = await categoryService.createCategory({userId, name, color});
     
 
     res.status(201).json({
