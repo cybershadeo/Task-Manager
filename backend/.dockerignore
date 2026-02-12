@@ -1,0 +1,10 @@
+#dependencies
+node_modules
+
+#git history and relate files
+.git
+.gitignore
+
+#ignore enviromental files
+.env
+

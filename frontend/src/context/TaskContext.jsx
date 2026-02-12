@@ -43,7 +43,7 @@ export const TaskProvider = ({ children }) => {
   const tasksWithSubtasks = useMemo(() => {
     return tasks.map((task) => ({
       ...task,
-      subtasks: subtasks.filter((subtask) => subtask.taskId === task.id),
+      subtasks: subtasks.filter((subtask) => subtask?.taskId === task.id),
     }));
   }, [tasks, subtasks]);
 

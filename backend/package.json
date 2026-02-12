@@ -6,7 +6,7 @@
   "scripts": {
     "test": "NODE_ENV=test jest --watchAll --verbose",
     "start": "node server.js",
-    "dev": "nodemon server.js"
+    "dev": "prisma generate && nodemon server.js"
   },
   "jest": {
     "testEnvironment": "node",

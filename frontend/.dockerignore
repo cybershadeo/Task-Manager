@@ -1,0 +1,11 @@
+#dependencies
+node_modules
+package-lock.json
+
+#git history and relate files
+.git
+.gitignore
+
+#ignore enviromental files
+.env
+
